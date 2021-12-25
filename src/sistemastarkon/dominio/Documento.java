@@ -6,7 +6,7 @@ public class Documento extends Entrega {
 	public Documento(String codigo, int peso, int grosor) {
 		super(codigo, peso);
 		this.grosor = grosor;
-		setValor(peso * grosor * 100);
+		setValor((int)((peso/1000.0) * (grosor/10.0) * 100));
 	}
 	
 	public int getGrosor() {
@@ -15,5 +15,10 @@ public class Documento extends Entrega {
 
 	public void setGrosor(int grosor) {
 		this.grosor = grosor;
-	}	
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + ", grosor: " + grosor + " mm";
+	}
 }

@@ -19,13 +19,15 @@ public interface SistemaStarkon {
 	
 	boolean verificarCliente(String rut);
 	
+	int getSaldoCliente(String rut);
+	
 	void recargarSaldo(String rut, int monto);
 	
-	String obtenerEntregas();
+	String obtenerEntregasTipo();
 	
 	String obtenerDatosOficinas();
 	
-	String obtenerEntregasCliente();
+	String obtenerEntregasCliente(String rut);
 	
 	String obtenerBalances();
 	

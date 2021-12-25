@@ -8,11 +8,11 @@ public class Valija extends Entrega {
 		this.material = material;
 		switch (material) {
 		case "Cuero":
-			setValor(peso * 200 * 150);
+			setValor((int)((peso/1000.0) * 200 * 150));
 		case "Plastico":
-			setValor(peso * 150 * 150);
+			setValor((int)((peso/1000.0) * 150 * 150));
 		case "Tela":
-			setValor(peso * 100 * 150);
+			setValor((int)((peso/1000.0) * 100 * 150));
 		}
 	}
 
@@ -22,5 +22,10 @@ public class Valija extends Entrega {
 
 	public void setMaterial(String material) {
 		this.material = material;
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + ", material: " + material.toLowerCase();
 	}
 }

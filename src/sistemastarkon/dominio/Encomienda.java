@@ -10,7 +10,8 @@ public class Encomienda extends Entrega {
 		this.largo = largo;
 		this.ancho = ancho;
 		this.profundidad = profundidad;
-		setValor(peso * largo * ancho * profundidad * 50);
+		setValor((int)((peso/1000.0) * (largo/100.0) * (ancho/100.0) 
+				* (profundidad/100.0) * 50));
 	}
 
 	public int getLargo() {
@@ -37,4 +38,9 @@ public class Encomienda extends Entrega {
 		this.profundidad = profundidad;
 	}
 
+	@Override
+	public String toString() {
+		return super.toString() + ", largo: " + largo + " cm, ancho: " + ancho
+				+ " cm, profundidad: " + profundidad + " cm";
+	}
 }

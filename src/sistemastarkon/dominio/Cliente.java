@@ -16,6 +16,8 @@ public class Cliente {
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.saldo = saldo;
+		envios = new ListaCircularDobleEnlace<Entrega>();
+		recibos = new ListaCircularDobleEnlace<Entrega>();
 	}
 
 	public String getRut() {

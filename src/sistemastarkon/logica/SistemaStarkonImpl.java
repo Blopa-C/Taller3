@@ -51,7 +51,7 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	private Entrega buscarEntrega(String codigo) {
 		for (int i = 0; i < entregas.size(); i++) {
 			Entrega e = entregas.get(i);
-			if (e.getCodigo().equals(e)) {
+			if (e.getCodigo().equals(codigo)) {
 				return e;
 			}
 		}
@@ -64,9 +64,6 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 		Sucursal sucursal = buscarSucursal(ciudad);
 		if (sucursal != null) {
 			cliente.setSucursal(sucursal);
-		}
-		else {
-			throw new NullPointerException("La sucursal no existe");
 		}
 	}
 
@@ -111,18 +108,25 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 
 	@Override
 	public boolean verificarCliente(String rut) {
-		// TODO Auto-generated method stub
-		return false;
+		Cliente c = buscarCliente(rut);
+		if (c != null) return true;
+		else return false;
+	}
+	
+	@Override
+	public int getSaldoCliente(String rut) {
+		Cliente c = buscarCliente(rut);
+		return c.getSaldo();
 	}
 
 	@Override
 	public void recargarSaldo(String rut, int monto) {
-		// TODO Auto-generated method stub
-
+		Cliente c = buscarCliente(rut);
+		c.setSaldo(c.getSaldo() + monto);
 	}
 
 	@Override
-	public String obtenerEntregas() {
+	public String obtenerEntregasTipo() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -134,9 +138,21 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	}
 
 	@Override
-	public String obtenerEntregasCliente() {
-		// TODO Auto-generated method stub
-		return null;
+	public String obtenerEntregasCliente(String rut) {
+		Cliente c = buscarCliente(rut);
+		ListaCircularDobleEnlace<Entrega> envios = c.getEnvios();
+		ListaCircularDobleEnlace<Entrega> recibos = c.getRecibos();
+		String text = "[Envios]\n";
+		for (int i = 0; i < envios.size(); i++) {
+			Entrega e = envios.get(i);
+			text += "- " + e.toString() + "\n";
+		}
+		text += "[Recibos]\n";
+		for (int i = 0; i < recibos.size(); i++) {
+			Entrega e = recibos.get(i);
+			text += "- " + e.toString() + "\n";
+		}
+		return text.trim();
 	}
 
 	@Override

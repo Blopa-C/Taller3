@@ -51,4 +51,10 @@ public abstract class Entrega {
 	public void setDestinatario(Cliente destinatario) {
 		this.destinatario = destinatario;
 	}
+	
+	@Override
+	public String toString() {
+		return "Codigo: " + codigo + ", peso: " + peso + " g, valor: $ "
+				+ valor;
+	}
 }

@@ -9,6 +9,8 @@ public class Sucursal {
 	
 	public Sucursal(String ciudad) {
 		this.ciudad = ciudad;
+		envios = new ListaCircularDobleEnlace<Entrega>();
+		recibos = new ListaCircularDobleEnlace<Entrega>();
 	}
 
 	public String getCiudad() {

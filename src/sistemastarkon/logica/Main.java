@@ -7,9 +7,129 @@ public class Main {
 
 	public static void main(String[] args) {
 		SistemaStarkon sistema = new SistemaStarkonImpl();
+		Scanner scan = new Scanner(System.in);
+		
 		leerArchivoSucursales(sistema);
 		leerArchivoClientes(sistema);
 		leerArchivoEntregas(sistema);
+		abrirMenuPrincipal(sistema, scan);
+	}
+
+	private static void abrirMenuPrincipal(SistemaStarkon sistema,
+			Scanner scan) {
+		System.out.println("\n>--- MENU PRINCIPAL ---<\n");
+		System.out.print("RUT: ");
+		String rut = scan.nextLine().trim();
+		if (rut.equals("Admin")) {
+			System.out.print("Contrasena: ");
+			String contra = scan.nextLine().trim();
+			if (contra.equals("choripan123")) {
+				abrirMenuAdmin(sistema, scan);
+			}
+			else {
+				System.out.println("\n* Contrasena incorrecta *");
+			}
+		}
+		else {
+			if (sistema.verificarCliente(rut)) {
+				abrirMenuCliente(sistema, scan, rut);
+			}
+			else {
+				while (true) {
+					System.out.print("\n* Cliente no registrado. "
+							+ "Desea registrarse: (y/n) ");
+					String resp = scan.nextLine().trim();
+					if (resp.equalsIgnoreCase("y")) {
+						registrarUsuario(sistema, scan, rut);
+						break;
+					}
+					else if (resp.equalsIgnoreCase("n")) {
+						break;
+					}
+					else {
+						continue;
+					}
+				}
+			}
+		}
+		abrirMenuPrincipal(sistema, scan);
+	}
+
+	private static void registrarUsuario(SistemaStarkon sistema, Scanner scan,
+			String rut) {
+		System.out.println("\n>--- REGISTRAR USUARIO ---<\n");
+		System.out.print("Nombre: ");
+		String nombre = scan.nextLine();
+		System.out.print("Apellido: ");
+		String apellido = scan.nextLine();
+		System.out.print("Saldo inicial: $ ");
+		int saldo = Integer.parseInt(scan.nextLine());
+		System.out.print("Ciudad: ");
+		String ciudad = scan.nextLine();
+		sistema.ingresarCliente(rut, nombre, apellido, saldo);
+		sistema.asociarClienteSucursal(ciudad, rut);
+		System.out.println("\n* Registro exitoso! *");
+	}
+
+	private static void abrirMenuCliente(SistemaStarkon sistema, Scanner scan,
+			String rut) {
+		System.out.println("\n>--- MENU CLIENTE ---<\n");
+		System.out.println("[1] Realizar una entrega");
+		System.out.println("[2] Recargar saldo");
+		System.out.println("[3] Ver mis entregas");
+		System.out.println("[4] Menu principal");
+		System.out.print("\n>>> ");
+		String opcion = scan.nextLine();
+		switch (opcion) {
+		case "1":
+			realizarEntrega(sistema, scan, rut);
+			break;
+		case "2":
+			recargarSaldo(sistema, scan, rut);
+			break;
+		case "3":
+			verEntregas(sistema, scan, rut);
+			break;
+		case "4":
+			abrirMenuPrincipal(sistema, scan);
+			break;
+		}
+		abrirMenuCliente(sistema, scan, rut);
+	}
+
+	private static void verEntregas(SistemaStarkon sistema, Scanner scan,
+			String rut) {
+		System.out.println("\n>--- MIS ENTREGAS ---<\n");
+		System.out.println(sistema.obtenerEntregasCliente(rut));
+	}
+
+	private static void realizarEntrega(SistemaStarkon sistema, Scanner scan,
+			String rut) {
+		System.out.println("/n>--- REALIZAR ENTREGA ---<\n");
+		System.out.println("[1] Documento");
+		System.out.println("[2] Encomienda");
+		System.out.println("[3] Valija");
+		System.out.print("\n>>> ");
+		String tipo = scan.nextLine();
+	}
+
+	private static void recargarSaldo(SistemaStarkon sistema, Scanner scan,
+			String rut) {
+		System.out.println("\n>--- RECARGAR SALDO <---\n");
+		System.out.println("Saldo actual: $ " + sistema.getSaldoCliente(rut) + "\n");
+		int monto;
+		do {
+			System.out.print("Monto: $ ");
+			monto = Integer.parseInt(scan.nextLine());
+		} while (monto <= 0);
+		sistema.recargarSaldo(rut, monto);
+		System.out.println("\n* Recarga exitosa! Nuevo saldo: $ "
+				+ sistema.getSaldoCliente(rut) + " *");
+	}
+
+	private static void abrirMenuAdmin(SistemaStarkon sistema, Scanner scan) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private static void leerArchivoEntregas(SistemaStarkon sistema) {
@@ -66,12 +186,7 @@ public class Main {
 				int saldo = Integer.parseInt(partes[3]);
 				sistema.ingresarCliente(rut, nombre, apellido, saldo);
 				String ciudad = partes[4];
-				try {
-					sistema.asociarClienteSucursal(ciudad, rut);
-				}
-				catch (NullPointerException e) {
-					System.out.println(e.getMessage());
-				}
+				sistema.asociarClienteSucursal(ciudad, rut);
 			}
 			scan.close();
 		}
