@@ -6,6 +6,8 @@ public interface SistemaStarkon {
 	
 	void ingresarCliente(String rut, String nombre, String apellido, int saldo);
 	
+	void asociarClienteSucursal(String ciudad, String rut);
+	
 	void ingresarDocumento(String codigo, int peso, int grosor);
 	
 	void ingresarEncomienda(String codigo, int peso, int largo, int ancho,
@@ -13,9 +15,7 @@ public interface SistemaStarkon {
 	
 	void ingresarValija(String codigo, int peso, String material);
 	
-	void asociarReciboCliente(String codigo, String rut);
-	
-	void asociarEnvioCliente(String codigo, String rut);
+	void asociarEntregas(String codigo, String rutRemitente, String rutDestinatario);
 	
 	boolean verificarCliente(String rut);
 	

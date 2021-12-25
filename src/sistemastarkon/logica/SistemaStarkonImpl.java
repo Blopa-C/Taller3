@@ -19,46 +19,94 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	
 	@Override
 	public void ingresarSucursal(String ciudad) {
-		// TODO Auto-generated method stub
-
+		Sucursal suc = new Sucursal(ciudad);
+		sucursales.add(suc);
 	}
 
 	@Override
 	public void ingresarCliente(String rut, String nombre, String apellido,
 			int saldo) {
-		// TODO Auto-generated method stub
-
+		Cliente cl = new Cliente(rut, nombre, apellido, saldo);
+		clientes.add(cl);
+	}
+	
+	private Cliente buscarCliente(String rut) {
+		for (Cliente c : clientes) {
+			if (c.getRut().equals(rut)) {
+				return c;
+			}
+		}
+		return null;
+	}
+	
+	private Sucursal buscarSucursal(String ciudad) {
+		for (Sucursal s : sucursales) {
+			if (s.getCiudad().equals(ciudad)) {
+				return s;
+			}
+		}
+		return null;
+	}
+	
+	private Entrega buscarEntrega(String codigo) {
+		for (int i = 0; i < entregas.size(); i++) {
+			Entrega e = entregas.get(i);
+			if (e.getCodigo().equals(e)) {
+				return e;
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public void asociarClienteSucursal(String ciudad, String rut) {
+		Cliente cliente = buscarCliente(rut);
+		Sucursal sucursal = buscarSucursal(ciudad);
+		if (sucursal != null) {
+			cliente.setSucursal(sucursal);
+		}
+		else {
+			throw new NullPointerException("La sucursal no existe");
+		}
 	}
 
 	@Override
 	public void ingresarDocumento(String codigo, int peso, int grosor) {
-		// TODO Auto-generated method stub
-
+		Entrega documento = new Documento(codigo, peso, grosor);
+		entregas.add(documento);
 	}
 
 	@Override
 	public void ingresarEncomienda(String codigo, int peso, int largo,
 			int ancho, int profundidad) {
-		// TODO Auto-generated method stub
-
+		Entrega encomienda = new Encomienda(codigo, peso, largo, ancho, profundidad);
+		entregas.add(encomienda);
 	}
 
 	@Override
 	public void ingresarValija(String codigo, int peso, String material) {
-		// TODO Auto-generated method stub
-
+		Entrega valija = new Valija(codigo, peso, material);
+		entregas.add(valija);
 	}
 
 	@Override
-	public void asociarReciboCliente(String codigo, String rut) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void asociarEnvioCliente(String codigo, String rut) {
-		// TODO Auto-generated method stub
-
+	public void asociarEntregas(String codigo, String rutRemitente,
+			String rutDestinatario) {
+		Entrega entrega = buscarEntrega(codigo);
+		Cliente remitente = buscarCliente(rutRemitente);
+		Cliente destinatario = buscarCliente(rutDestinatario);
+		if (remitente == null) {
+			throw new NullPointerException("El remitente no existe");
+		}
+		else if (destinatario == null) {
+			throw new NullPointerException("El destinatario no existe");
+		}
+		else {
+			remitente.getEnvios().add(entrega);
+			remitente.getSucursal().getEnvios().add(entrega);
+			destinatario.getRecibos().add(entrega);
+			destinatario.getSucursal().getRecibos().add(entrega);
+		}
 	}
 
 	@Override
