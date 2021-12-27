@@ -10,8 +10,20 @@ public class Encomienda extends Entrega {
 		this.largo = largo;
 		this.ancho = ancho;
 		this.profundidad = profundidad;
-		setValor((int)((peso/1000.0) * (largo/100.0) * (ancho/100.0) 
-				* (profundidad/100.0) * 50));
+		setValor(calcularValor());
+	}
+	
+	public int calcularValor() {
+		return (int)((getPeso()/1000.0) * (largo/100.0) * (ancho/100.0) 
+				* (profundidad/100.0) * 50);
+	}
+	
+	public boolean verificarLimites() {
+		if (getPeso() <= 0 || getPeso() > 50000) return false;
+		else if (largo <= 0 || largo > 120) return false;
+		else if (ancho <= 0 || ancho > 80) return false;
+		else if (profundidad <= 0 || profundidad > 80) return false;
+		return true;
 	}
 
 	public int getLargo() {

@@ -11,6 +11,10 @@ public abstract class Entrega {
 		this.codigo = codigo;
 		this.peso = peso;
 	}
+	
+	public abstract int calcularValor();
+	
+	public abstract boolean verificarLimites();
 
 	public String getCodigo() {
 		return codigo;

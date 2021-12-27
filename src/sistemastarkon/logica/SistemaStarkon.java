@@ -19,7 +19,17 @@ public interface SistemaStarkon {
 	
 	boolean verificarCliente(String rut);
 	
+	boolean comprobarSucursalCliente(String rut);
+	
+	int calcularValorEntrega(String codigo);
+	
 	int getSaldoCliente(String rut);
+	
+	String getCodigoUnico();
+	
+	boolean comprobarLimitesEntrega(String codigo);
+	
+	boolean eliminarEntrega(String codigo);
 	
 	void recargarSaldo(String rut, int monto);
 	

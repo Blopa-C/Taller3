@@ -5,15 +5,29 @@ public class Valija extends Entrega {
 
 	public Valija(String codigo, int peso, String material) {
 		super(codigo, peso);
-		this.material = material;
+		this.material = material.toLowerCase();
+		setValor(calcularValor());
+	}
+	
+	public boolean verificarLimites() {
+		if (getPeso() <= 0 || getPeso() > 2000) return false;
+		if (!material.equalsIgnoreCase("cuero")
+				&& !material.equalsIgnoreCase("plastico")
+				&& !material.equalsIgnoreCase("tela")) return false;
+		return true;
+	}
+	
+	public int calcularValor() {
+		int precioMaterial = 0;
 		switch (material) {
-		case "Cuero":
-			setValor((int)((peso/1000.0) * 200 * 150));
-		case "Plastico":
-			setValor((int)((peso/1000.0) * 150 * 150));
-		case "Tela":
-			setValor((int)((peso/1000.0) * 100 * 150));
+		case "cuero":
+			precioMaterial = 200;
+		case "plastico":
+			precioMaterial = 150;
+		case "tela":
+			precioMaterial = 100;
 		}
+		return (int)((getPeso()/1000.0) * precioMaterial * 150);
 	}
 
 	public String getMaterial() {

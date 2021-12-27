@@ -28,6 +28,22 @@ public class ListaCircularDobleEnlace<T> {
 		size++;
 	}
 	
+	public boolean remove(T info) {
+		NodoDoble<T> current = header.getNext();
+		for (int i = 0; i < size; i++) {
+			if (current.getInfo() == info) {
+				current.getPrevious().setNext(current.getNext());
+				current.getNext().setPrevious(current.getPrevious());
+				size--;
+				return true;
+			}
+			else {
+				current = current.getNext();
+			}
+		}
+		return false;
+	}
+	
 	public T get(int i) {
 		if (i >= 0 && i < size) {
 			NodoDoble<T> current = header.getNext();

@@ -1,6 +1,9 @@
 package sistemastarkon.logica;
 
 import java.util.*;
+
+import sistemastarkon.dominio.*;
+
 import java.io.*;
 
 public class Main {
@@ -82,7 +85,12 @@ public class Main {
 		String opcion = scan.nextLine();
 		switch (opcion) {
 		case "1":
-			realizarEntrega(sistema, scan, rut);
+			if (sistema.comprobarSucursalCliente(rut)) {
+				realizarEntrega(sistema, scan, rut);
+			}
+			else {
+				System.out.println("\n* No existe una oficina Starkon en su ciudad *");
+			}
 			break;
 		case "2":
 			recargarSaldo(sistema, scan, rut);
@@ -105,14 +113,81 @@ public class Main {
 
 	private static void realizarEntrega(SistemaStarkon sistema, Scanner scan,
 			String rut) {
-		System.out.println("/n>--- REALIZAR ENTREGA ---<\n");
+		System.out.println("\n>--- REALIZAR ENTREGA ---<\n");
 		System.out.println("[1] Documento");
 		System.out.println("[2] Encomienda");
 		System.out.println("[3] Valija");
 		System.out.print("\n>>> ");
 		String tipo = scan.nextLine();
+		String codigo = "";
+		int peso = 0;
+		switch (tipo) {
+		case "1":
+			System.out.print("\nPeso en gramos: ");
+			peso = Integer.parseInt(scan.nextLine());
+			System.out.print("Grosor en mm: ");
+			int grosor = Integer.parseInt(scan.nextLine());
+			codigo = sistema.getCodigoUnico();
+			sistema.ingresarDocumento(codigo, peso, grosor);
+			break;
+		case "2":
+			System.out.print("\nPeso en gramos: ");
+			peso = Integer.parseInt(scan.nextLine());
+			System.out.print("Largo en cm: ");
+			int largo = Integer.parseInt(scan.nextLine());
+			System.out.print("Ancho en cm: ");
+			int ancho = Integer.parseInt(scan.nextLine());
+			System.out.print("Profundidad en cm: ");
+			int profundidad = Integer.parseInt(scan.nextLine());
+			codigo = sistema.getCodigoUnico();
+			sistema.ingresarEncomienda(codigo, peso, largo, 
+					ancho, profundidad);
+			break;
+		case "3":
+			System.out.print("\nPeso en gramos: ");
+			peso = Integer.parseInt(scan.nextLine());
+			System.out.print("Material: (Cuero/Plastico/Tela) ");
+			String material = scan.nextLine();
+			codigo = sistema.getCodigoUnico();
+			sistema.ingresarValija(codigo, peso, material);
+			break;
+		default:
+			System.out.println("\n* Opcion invalida *");
+			Main.realizarEntrega(sistema, scan, rut);
+		}
+		if (sistema.comprobarLimitesEntrega(codigo)) {
+			int valor = sistema.calcularValorEntrega(codigo);
+			if (sistema.getSaldoCliente(rut) >= valor) {
+				System.out.print("\nRUT del destinatario: ");
+				String rutDest = scan.nextLine();
+				if (sistema.verificarCliente(rutDest)) {
+					if (sistema.comprobarSucursalCliente(rutDest)) {
+						System.out.println("\n* Entrega realizada! *");
+						sistema.recargarSaldo(rut, -valor);
+						sistema.asociarEntregas(codigo, rut, rutDest);
+					}
+					else {
+						System.out.println("\n* El destinatario no puede recibir"
+								+ " entregas *");
+						sistema.eliminarEntrega(codigo);
+					}
+				}
+				else {
+					System.out.println("\n* El destinatario no esta registrado *");
+					sistema.eliminarEntrega(codigo);
+				}
+			}
+			else {
+				System.out.println("\n* Saldo insuficiente *");
+				sistema.eliminarEntrega(codigo);
+			}
+		}
+		else {
+			System.out.println("\n* Especificaciones de la entrega fuera de rango *");
+			sistema.eliminarEntrega(codigo);
+		}
 	}
-
+	
 	private static void recargarSaldo(SistemaStarkon sistema, Scanner scan,
 			String rut) {
 		System.out.println("\n>--- RECARGAR SALDO <---\n");

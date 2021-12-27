@@ -3,6 +3,7 @@ package sistemastarkon.logica;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import sistemastarkon.dominio.*;
 
@@ -32,7 +33,7 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	
 	private Cliente buscarCliente(String rut) {
 		for (Cliente c : clientes) {
-			if (c.getRut().equals(rut)) {
+			if (c.getRut().equalsIgnoreCase(rut)) {
 				return c;
 			}
 		}
@@ -41,7 +42,7 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	
 	private Sucursal buscarSucursal(String ciudad) {
 		for (Sucursal s : sucursales) {
-			if (s.getCiudad().equals(ciudad)) {
+			if (s.getCiudad().equalsIgnoreCase(ciudad)) {
 				return s;
 			}
 		}
@@ -114,9 +115,53 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	}
 	
 	@Override
+	public boolean comprobarSucursalCliente(String rut) {
+		Cliente c = buscarCliente(rut);
+		if (c.getSucursal() != null) {
+			return true;
+		}
+		else return false;
+	}
+	
+	@Override
+	public int calcularValorEntrega(String codigo) {
+		Entrega e = buscarEntrega(codigo);
+		return e.calcularValor();
+	}
+	
+	@Override
 	public int getSaldoCliente(String rut) {
 		Cliente c = buscarCliente(rut);
 		return c.getSaldo();
+	}
+	
+	private String generateCode() {
+		String code = "";
+		for (int i = 0; i < 6; i++) {
+			code += String.valueOf(ThreadLocalRandom.current().nextInt(0, 10));
+		}
+		return code;
+	}
+	
+	@Override
+	public String getCodigoUnico() {
+		String code;
+		do {
+			code = generateCode();
+		} while (buscarEntrega(code) != null);
+		return code;
+	}
+	
+	@Override
+	public boolean comprobarLimitesEntrega(String codigo) {
+		Entrega e = buscarEntrega(codigo);
+		return e.verificarLimites();
+	}
+	
+	@Override
+	public boolean eliminarEntrega(String codigo) {
+		Entrega e = buscarEntrega(codigo);
+		return entregas.remove(e);
 	}
 
 	@Override
