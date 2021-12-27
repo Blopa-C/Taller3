@@ -7,21 +7,27 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import sistemastarkon.dominio.*;
 
+/**
+ * 
+ * @author Pablo Cortes
+ * @author Maria Luisa Rivera
+ *
+ */
 public class SistemaStarkonImpl implements SistemaStarkon {
 	private List<Cliente> clientes;
-	private List<Sucursal> sucursales;
+	private List<Oficina> oficinas;
 	private ListaCircularDobleEnlace<Entrega> entregas;
 	
 	public SistemaStarkonImpl() {
 		clientes = new LinkedList<Cliente>();
-		sucursales = new ArrayList<Sucursal>();
+		oficinas = new ArrayList<Oficina>();
 		entregas = new ListaCircularDobleEnlace<Entrega>();
 	}
 	
 	@Override
-	public void ingresarSucursal(String ciudad) {
-		Sucursal suc = new Sucursal(ciudad);
-		sucursales.add(suc);
+	public void ingresarOficina(String ciudad) {
+		Oficina ofic = new Oficina(ciudad);
+		oficinas.add(ofic);
 	}
 
 	@Override
@@ -31,6 +37,11 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 		clientes.add(cl);
 	}
 	
+	/**
+	 * Searchs for the client in the list of clients.
+	 * @param rut the RUR of the client.
+	 * @return the instance of {@code Cliente}.
+	 */
 	private Cliente buscarCliente(String rut) {
 		for (Cliente c : clientes) {
 			if (c.getRut().equalsIgnoreCase(rut)) {
@@ -40,15 +51,25 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 		return null;
 	}
 	
-	private Sucursal buscarSucursal(String ciudad) {
-		for (Sucursal s : sucursales) {
-			if (s.getCiudad().equalsIgnoreCase(ciudad)) {
-				return s;
+	/**
+	 * Searchs for the office in the list of offices.
+	 * @param ciudad the city where the office is located.
+	 * @return the instance of {@code Oficina}.
+	 */
+	private Oficina buscarOficina(String ciudad) {
+		for (Oficina o : oficinas) {
+			if (o.getCiudad().equalsIgnoreCase(ciudad)) {
+				return o;
 			}
 		}
 		return null;
 	}
 	
+	/**
+	 * Searchs for the delivery in the list of deliveries.
+	 * @param codigo the code of the delivery.
+	 * @return the instance of {@code Entrega}.
+	 */
 	private Entrega buscarEntrega(String codigo) {
 		for (int i = 0; i < entregas.size(); i++) {
 			Entrega e = entregas.get(i);
@@ -60,11 +81,11 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	}
 	
 	@Override
-	public void asociarClienteSucursal(String ciudad, String rut) {
+	public void asociarClienteOficina(String ciudad, String rut) {
 		Cliente cliente = buscarCliente(rut);
-		Sucursal sucursal = buscarSucursal(ciudad);
-		if (sucursal != null) {
-			cliente.setSucursal(sucursal);
+		Oficina oficina = buscarOficina(ciudad);
+		if (oficina != null) {
+			cliente.setOficina(oficina);
 		}
 	}
 
@@ -101,9 +122,9 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 		}
 		else {
 			remitente.getEnvios().add(entrega);
-			remitente.getSucursal().getEnvios().add(entrega);
+			remitente.getOficina().getEnvios().add(entrega);
 			destinatario.getRecibos().add(entrega);
-			destinatario.getSucursal().getRecibos().add(entrega);
+			destinatario.getOficina().getRecibos().add(entrega);
 			entrega.setRemitente(remitente);
 			entrega.setDestinatario(destinatario);
 		}
@@ -117,9 +138,9 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	}
 	
 	@Override
-	public boolean comprobarSucursalCliente(String rut) {
+	public boolean comprobarOficinaCliente(String rut) {
 		Cliente c = buscarCliente(rut);
-		if (c.getSucursal() != null) {
+		if (c.getOficina() != null) {
 			return true;
 		}
 		else return false;
@@ -137,6 +158,10 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 		return c.getSaldo();
 	}
 	
+	/**
+	 * Generates a random six-digit number.
+	 * @return a random six-digit number.
+	 */
 	private String generateCode() {
 		String code = "";
 		for (int i = 0; i < 6; i++) {
@@ -201,10 +226,10 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	@Override
 	public String obtenerDatosOficinas() {
 		String text = "";
-		for (Sucursal s : sucursales) {
-			int cantEnvios = s.getEnvios().size();
-			int cantRecibos = s.getRecibos().size();
-			text += "- " + s.getCiudad() + ": " + cantEnvios + " envios"
+		for (Oficina o : oficinas) {
+			int cantEnvios = o.getEnvios().size();
+			int cantRecibos = o.getRecibos().size();
+			text += "- " + o.getCiudad() + ": " + cantEnvios + " envios"
 					+ " - " + cantRecibos + " recibos\n";
 		}
 		return text.trim();
@@ -253,7 +278,7 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	public String obtenerBalances() {
 		String text = "";
 		int total = 0;
-		for (Sucursal s : sucursales) {
+		for (Oficina s : oficinas) {
 			int suma = 0;
 			ListaCircularDobleEnlace<Entrega> envios = s.getEnvios();
 			ListaCircularDobleEnlace<Entrega> recibos = s.getRecibos();
@@ -273,7 +298,7 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	}
 
 	@Override
-	public String obtenerTxtClientes() {
+	public String obtenerInfoClientes() {
 		String text = "";
 		for (Cliente c : clientes) {
 			String rut = c.getRut();
@@ -288,7 +313,7 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 	}
 
 	@Override
-	public String obtenerTxtEntregas() {
+	public String obtenerInfoEntregas() {
 		String text = "";
 		for (int i = 0; i < entregas.size(); i++) {
 			Entrega e = entregas.get(i);

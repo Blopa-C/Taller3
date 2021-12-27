@@ -8,7 +8,7 @@ public class Cliente {
 	private String apellido;
 	private int saldo;
 	private String ciudad;
-	private Sucursal sucursal;
+	private Oficina oficina;
 	private ListaCircularDobleEnlace<Entrega> envios;
 	private ListaCircularDobleEnlace<Entrega> recibos;
 	
@@ -63,12 +63,12 @@ public class Cliente {
 		this.saldo = saldo;
 	}
 
-	public Sucursal getSucursal() {
-		return sucursal;
+	public Oficina getOficina() {
+		return oficina;
 	}
 
-	public void setSucursal(Sucursal sucursal) {
-		this.sucursal = sucursal;
+	public void setOficina(Oficina sucursal) {
+		this.oficina = sucursal;
 	}
 
 	public ListaCircularDobleEnlace<Entrega> getEnvios() {

@@ -2,12 +2,12 @@ package sistemastarkon.dominio;
 
 import sistemastarkon.logica.ListaCircularDobleEnlace;
 
-public class Sucursal {
+public class Oficina {
 	private String ciudad;
 	private ListaCircularDobleEnlace<Entrega> envios;
 	private ListaCircularDobleEnlace<Entrega> recibos;
 	
-	public Sucursal(String ciudad) {
+	public Oficina(String ciudad) {
 		this.ciudad = ciudad;
 		envios = new ListaCircularDobleEnlace<Entrega>();
 		recibos = new ListaCircularDobleEnlace<Entrega>();

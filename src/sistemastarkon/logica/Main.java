@@ -3,6 +3,12 @@ package sistemastarkon.logica;
 import java.util.*;
 import java.io.*;
 
+/**
+ * 
+ * @author Pablo Cortes
+ * @author Maria Luisa Rivera
+ *
+ */
 public class Main {
 
 	public static void main(String[] args) {
@@ -15,6 +21,13 @@ public class Main {
 		abrirMenuPrincipal(sistema, scan);
 	}
 
+	/**
+	 * Displays the main menu. The following actions can be made:
+	 * 1. Open the login menu.
+	 * 2. Close the system.
+	 * @param sistema the program system.
+	 * @param scan the user input scanner.
+	 */
 	private static void abrirMenuPrincipal(SistemaStarkon sistema,
 			Scanner scan) {
 		System.out.println("\n>--- MENU PRINCIPAL ---<\n");
@@ -36,15 +49,20 @@ public class Main {
 		abrirMenuPrincipal(sistema, scan);
 	}
 
+	/**
+	 * Overwrites the text files with the current system information and shuts
+	 * it down.
+	 * @param sistema the program system.
+	 */
 	private static void cerrarSistema(SistemaStarkon sistema) {
 		try {
 			FileWriter fw = new FileWriter("clientes.txt");
-			String infoClientes = sistema.obtenerTxtClientes();
+			String infoClientes = sistema.obtenerInfoClientes();
 			fw.write(infoClientes);
 			fw.close();
 			
 			fw = new FileWriter("entregas.txt");
-			String infoEntregas = sistema.obtenerTxtEntregas();
+			String infoEntregas = sistema.obtenerInfoEntregas();
 			fw.write(infoEntregas);
 			fw.close();
 		}
@@ -54,6 +72,14 @@ public class Main {
 		System.exit(0);
 	}
 
+	/**
+	 * Prompts for a RUT to login. If the RUT belongs to a registered user, the
+	 * client menu will open. If not, asks if you want to register.
+	 * If the given RUT is "Admin", it will prompt for a password. If the password
+	 * is "choripan123", the admin menu will open.
+	 * @param sistema
+	 * @param scan
+	 */
 	private static void iniciarSesion(SistemaStarkon sistema, Scanner scan) {
 		System.out.println("\n>--- INICIAR SESION --<\n");
 		System.out.print("RUT: ");
@@ -92,6 +118,12 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Prompts for info to register a user in the system.
+	 * @param sistema the program system.
+	 * @param scan the user input scanner.
+	 * @param rut the client RUT.
+	 */
 	private static void registrarUsuario(SistemaStarkon sistema, Scanner scan,
 			String rut) {
 		System.out.println("\n>--- REGISTRAR USUARIO ---<\n");
@@ -104,10 +136,16 @@ public class Main {
 		System.out.print("Ciudad: ");
 		String ciudad = scan.nextLine();
 		sistema.ingresarCliente(rut, nombre, apellido, saldo, ciudad);
-		sistema.asociarClienteSucursal(ciudad, rut);
+		sistema.asociarClienteOficina(ciudad, rut);
 		System.out.println("\n* Registro exitoso! *");
 	}
 
+	/**
+	 * Displays the client menu.
+	 * @param sistema the program system.
+	 * @param scan the user input scanner.
+	 * @param rut the client RUT.
+	 */
 	private static void abrirMenuCliente(SistemaStarkon sistema, Scanner scan,
 			String rut) {
 		System.out.println("\n>--- MENU CLIENTE ---<\n");
@@ -119,7 +157,7 @@ public class Main {
 		String opcion = scan.nextLine();
 		switch (opcion) {
 		case "1":
-			if (sistema.comprobarSucursalCliente(rut)) {
+			if (sistema.comprobarOficinaCliente(rut)) {
 				realizarEntrega(sistema, scan, rut);
 			}
 			else {
@@ -130,7 +168,7 @@ public class Main {
 			recargarSaldo(sistema, scan, rut);
 			break;
 		case "3":
-			verEntregas(sistema, scan, rut);
+			verEntregas(sistema, rut);
 			break;
 		case "4":
 			abrirMenuPrincipal(sistema, scan);
@@ -141,12 +179,30 @@ public class Main {
 		abrirMenuCliente(sistema, scan, rut);
 	}
 
-	private static void verEntregas(SistemaStarkon sistema, Scanner scan,
-			String rut) {
+	/**
+	 * Shows the client deliveries.
+	 * @param sistema the program system.
+	 * @param rut the client RUT.
+	 */
+	private static void verEntregas(SistemaStarkon sistema, String rut) {
 		System.out.println("\n>--- MIS ENTREGAS ---<\n");
 		System.out.println(sistema.obtenerEntregasCliente(rut));
 	}
 
+	/**
+	 * Displays a menu that allows the client to make a delivery. The following
+	 * conditions must be met:
+	 * 1. The specifications of the delivery must be within the allowed range.
+	 * 2. The client must have enough balance to make the delivery.
+	 * 3. The client treceiving the delivery must be registered.
+	 * 4. The client receiving the delivery must live in a city where an office
+	 *    is located.
+	 * After making the delivery, all the corresponding associations will be made
+	 * and the price of the delivery is discounted from the client balance.
+	 * @param sistema the program system.
+	 * @param scan the user input scanner.
+	 * @param rut the RUT of the client.
+	 */
 	private static void realizarEntrega(SistemaStarkon sistema, Scanner scan,
 			String rut) {
 		System.out.println("\n>--- REALIZAR ENTREGA ---<\n");
@@ -197,7 +253,7 @@ public class Main {
 				System.out.print("\nRUT del destinatario: ");
 				String rutDest = scan.nextLine();
 				if (sistema.verificarCliente(rutDest)) {
-					if (sistema.comprobarSucursalCliente(rutDest)) {
+					if (sistema.comprobarOficinaCliente(rutDest)) {
 						System.out.println("\n* Entrega realizada! *");
 						sistema.recargarSaldo(rut, -valor);
 						sistema.asociarEntregas(codigo, rut, rutDest);
@@ -224,6 +280,13 @@ public class Main {
 		}
 	}
 	
+	/**
+	 * Displays a menu that allows a client to recharge his balance. Only allows
+	 * positive numbers.
+	 * @param sistema the program system.
+	 * @param scan the user input scanner.
+	 * @param rut the RUT of the client.
+	 */
 	private static void recargarSaldo(SistemaStarkon sistema, Scanner scan,
 			String rut) {
 		System.out.println("\n>--- RECARGAR SALDO <---\n");
@@ -238,6 +301,15 @@ public class Main {
 				+ sistema.getSaldoCliente(rut) + " *");
 	}
 
+	/**
+	 * Displays the admin menu. The following actions can be made:
+	 * 1. Show deliveries sorted by type.
+	 * 2. Show deliveries sorted by office.
+	 * 3. Show deliveries sorted by client.
+	 * 4. Show offices earnings.
+	 * @param sistema the program system.
+	 * @param scan the user input scanner.
+	 */
 	private static void abrirMenuAdmin(SistemaStarkon sistema, Scanner scan) {
 		System.out.println("\n>--- MENU ADMIN ---<\n");
 		System.out.println("[1] Entregas por tipo");
@@ -272,6 +344,10 @@ public class Main {
 		Main.abrirMenuAdmin(sistema, scan);
 	}
 
+	/**
+	 * Reads the deliveries info and adds it to the system.
+	 * @param sistema the program system.
+	 */
 	private static void leerArchivoEntregas(SistemaStarkon sistema) {
 		try {
 			Scanner scan = new Scanner(new File("entregas.txt"));
@@ -315,6 +391,10 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Reads the clients info and adds it to the system.
+	 * @param sistema the program system.
+	 */
 	private static void leerArchivoClientes(SistemaStarkon sistema) {
 		try {
 			Scanner scan = new Scanner(new File("clientes.txt"));
@@ -326,7 +406,7 @@ public class Main {
 				int saldo = Integer.parseInt(partes[3]);
 				String ciudad = partes[4];
 				sistema.ingresarCliente(rut, nombre, apellido, saldo, ciudad);
-				sistema.asociarClienteSucursal(ciudad, rut);
+				sistema.asociarClienteOficina(ciudad, rut);
 			}
 			scan.close();
 		}
@@ -335,12 +415,16 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Reads the offices info and adds it to the system.
+	 * @param sistema the program system.
+	 */
 	private static void leerArchivoSucursales(SistemaStarkon sistema) {
 		try {
 			Scanner scan = new Scanner(new File("localizaciones.txt"));
 			while (scan.hasNextLine()) {
 				String ciudad = scan.nextLine();
-				sistema.ingresarSucursal(ciudad);
+				sistema.ingresarOficina(ciudad);
 			}
 			scan.close();
 		}
