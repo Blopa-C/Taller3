@@ -7,17 +7,28 @@ public class Cliente {
 	private String nombre;
 	private String apellido;
 	private int saldo;
+	private String ciudad;
 	private Sucursal sucursal;
 	private ListaCircularDobleEnlace<Entrega> envios;
 	private ListaCircularDobleEnlace<Entrega> recibos;
 	
-	public Cliente(String rut, String nombre, String apellido, int saldo) {
+	public Cliente(String rut, String nombre, String apellido, int saldo,
+			String ciudad) {
 		this.rut = rut;
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.saldo = saldo;
+		this.ciudad = ciudad;
 		envios = new ListaCircularDobleEnlace<Entrega>();
 		recibos = new ListaCircularDobleEnlace<Entrega>();
+	}
+
+	public String getCiudad() {
+		return ciudad;
+	}
+
+	public void setCiudad(String ciudad) {
+		this.ciudad = ciudad;
 	}
 
 	public String getRut() {

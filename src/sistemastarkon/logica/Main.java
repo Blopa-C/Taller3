@@ -1,9 +1,6 @@
 package sistemastarkon.logica;
 
 import java.util.*;
-
-import sistemastarkon.dominio.*;
-
 import java.io.*;
 
 public class Main {
@@ -21,6 +18,44 @@ public class Main {
 	private static void abrirMenuPrincipal(SistemaStarkon sistema,
 			Scanner scan) {
 		System.out.println("\n>--- MENU PRINCIPAL ---<\n");
+		System.out.println("[1] Iniciar sesion");
+		System.out.println("[2] Cerrar sistema");
+		System.out.print("\n>>> ");
+		String tipo = scan.nextLine();
+		switch (tipo) {
+		case "1":
+			iniciarSesion(sistema, scan);
+			break;
+		case "2":
+			scan.close();
+			cerrarSistema(sistema);
+			break;
+		default:
+			System.out.println("\n* Opcion invalida *");
+		}
+		abrirMenuPrincipal(sistema, scan);
+	}
+
+	private static void cerrarSistema(SistemaStarkon sistema) {
+		try {
+			FileWriter fw = new FileWriter("clientes.txt");
+			String infoClientes = sistema.obtenerTxtClientes();
+			fw.write(infoClientes);
+			fw.close();
+			
+			fw = new FileWriter("entregas.txt");
+			String infoEntregas = sistema.obtenerTxtEntregas();
+			fw.write(infoEntregas);
+			fw.close();
+		}
+		catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		System.exit(0);
+	}
+
+	private static void iniciarSesion(SistemaStarkon sistema, Scanner scan) {
+		System.out.println("\n>--- INICIAR SESION --<\n");
 		System.out.print("RUT: ");
 		String rut = scan.nextLine().trim();
 		if (rut.equals("Admin")) {
@@ -55,7 +90,6 @@ public class Main {
 				}
 			}
 		}
-		abrirMenuPrincipal(sistema, scan);
 	}
 
 	private static void registrarUsuario(SistemaStarkon sistema, Scanner scan,
@@ -69,7 +103,7 @@ public class Main {
 		int saldo = Integer.parseInt(scan.nextLine());
 		System.out.print("Ciudad: ");
 		String ciudad = scan.nextLine();
-		sistema.ingresarCliente(rut, nombre, apellido, saldo);
+		sistema.ingresarCliente(rut, nombre, apellido, saldo, ciudad);
 		sistema.asociarClienteSucursal(ciudad, rut);
 		System.out.println("\n* Registro exitoso! *");
 	}
@@ -101,7 +135,9 @@ public class Main {
 		case "4":
 			abrirMenuPrincipal(sistema, scan);
 			break;
-		}
+		default:
+			System.out.println("\n* Opcion invalida *");
+		}	
 		abrirMenuCliente(sistema, scan, rut);
 	}
 
@@ -203,8 +239,37 @@ public class Main {
 	}
 
 	private static void abrirMenuAdmin(SistemaStarkon sistema, Scanner scan) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("\n>--- MENU ADMIN ---<\n");
+		System.out.println("[1] Entregas por tipo");
+		System.out.println("[2] Entregas por localizacion");
+		System.out.println("[3] Entregas por cliente");
+		System.out.println("[4] Registro de ganancias");
+		System.out.println("[5] Menu principal");
+		System.out.print("\n>>> ");
+		String opcion = scan.nextLine();
+		switch (opcion) {
+		case "1":
+			System.out.println("\n>--- ENTREGAS POR TIPO ---<\n");
+			System.out.println(sistema.obtenerEntregasTipo());
+			break;
+		case "2":
+			System.out.println("\n>--- ENTREGAS POR LOCALIZACION ---<\n");
+			System.out.println(sistema.obtenerDatosOficinas());
+			break;
+		case "3":
+			System.out.println("\n>--- ENTREGAS POR CLIENTE ---<\n");
+			System.out.println(sistema.obtenerEntregasClientes());
+			break;
+		case "4":
+			System.out.println("\n>--- REGISTRO DE GANANCIAS ---<\n");
+			System.out.println(sistema.obtenerBalances());
+			break;
+		case "5":
+			break;
+		default:
+			System.out.println("\n* Opcion invalida *");
+		}
+		Main.abrirMenuAdmin(sistema, scan);
 	}
 
 	private static void leerArchivoEntregas(SistemaStarkon sistema) {
@@ -259,8 +324,8 @@ public class Main {
 				String nombre = partes[1];
 				String apellido = partes[2];
 				int saldo = Integer.parseInt(partes[3]);
-				sistema.ingresarCliente(rut, nombre, apellido, saldo);
 				String ciudad = partes[4];
+				sistema.ingresarCliente(rut, nombre, apellido, saldo, ciudad);
 				sistema.asociarClienteSucursal(ciudad, rut);
 			}
 			scan.close();

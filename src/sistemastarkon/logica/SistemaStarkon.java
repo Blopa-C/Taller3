@@ -4,7 +4,8 @@ public interface SistemaStarkon {
 
 	void ingresarSucursal(String ciudad);
 	
-	void ingresarCliente(String rut, String nombre, String apellido, int saldo);
+	void ingresarCliente(String rut, String nombre, String apellido, int saldo,
+			String ciudad);
 	
 	void asociarClienteSucursal(String ciudad, String rut);
 	
@@ -38,6 +39,8 @@ public interface SistemaStarkon {
 	String obtenerDatosOficinas();
 	
 	String obtenerEntregasCliente(String rut);
+	
+	String obtenerEntregasClientes();
 	
 	String obtenerBalances();
 	

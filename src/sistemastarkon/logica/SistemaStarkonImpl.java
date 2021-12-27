@@ -26,8 +26,8 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 
 	@Override
 	public void ingresarCliente(String rut, String nombre, String apellido,
-			int saldo) {
-		Cliente cl = new Cliente(rut, nombre, apellido, saldo);
+			int saldo, String ciudad) {
+		Cliente cl = new Cliente(rut, nombre, apellido, saldo, ciudad);
 		clientes.add(cl);
 	}
 	
@@ -104,6 +104,8 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 			remitente.getSucursal().getEnvios().add(entrega);
 			destinatario.getRecibos().add(entrega);
 			destinatario.getSucursal().getRecibos().add(entrega);
+			entrega.setRemitente(remitente);
+			entrega.setDestinatario(destinatario);
 		}
 	}
 
@@ -172,14 +174,40 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 
 	@Override
 	public String obtenerEntregasTipo() {
-		// TODO Auto-generated method stub
-		return null;
+		String text = "[Documentos]\n";
+		for (int i = 0; i < entregas.size(); i++) {
+			Entrega e = entregas.get(i);
+			if (e instanceof Documento) {
+				text += "- " + e.getCodigo() + ": $ " + e.getValor() + "\n";
+			}
+		}
+		text += "\n[Encomiendas]\n";
+		for (int i = 0; i < entregas.size(); i++) {
+			Entrega e = entregas.get(i);
+			if (e instanceof Encomienda) {
+				text += "- " + e.getCodigo() + ": $ " + e.getValor() + "\n";
+			}
+		}
+		text += "\n[Valijas]\n";
+		for (int i = 0; i < entregas.size(); i++) {
+			Entrega e = entregas.get(i);
+			if (e instanceof Valija) {
+				text += "- " + e.getCodigo() + ": $ " + e.getValor() + "\n";
+			}
+		}
+		return text.trim();
 	}
 
 	@Override
 	public String obtenerDatosOficinas() {
-		// TODO Auto-generated method stub
-		return null;
+		String text = "";
+		for (Sucursal s : sucursales) {
+			int cantEnvios = s.getEnvios().size();
+			int cantRecibos = s.getRecibos().size();
+			text += "- " + s.getCiudad() + ": " + cantEnvios + " envios"
+					+ " - " + cantRecibos + " recibos\n";
+		}
+		return text.trim();
 	}
 
 	@Override
@@ -192,30 +220,105 @@ public class SistemaStarkonImpl implements SistemaStarkon {
 			Entrega e = envios.get(i);
 			text += "- " + e.toString() + "\n";
 		}
-		text += "[Recibos]\n";
+		text += "\n[Recibos]\n";
 		for (int i = 0; i < recibos.size(); i++) {
 			Entrega e = recibos.get(i);
 			text += "- " + e.toString() + "\n";
 		}
 		return text.trim();
 	}
+	
+	@Override
+	public String obtenerEntregasClientes() {
+		String text = "";
+		for (Cliente c : clientes) {
+			text += "\n* " + c.getRut() + ":\n";
+			ListaCircularDobleEnlace<Entrega> envios = c.getEnvios();
+			ListaCircularDobleEnlace<Entrega> recibos = c.getRecibos();
+			text += "\n[Envios]\n";
+			for (int i = 0; i < envios.size(); i++) {
+				Entrega e = envios.get(i);
+				text += "- " + e.toString() + "\n";
+			}
+			text += "[Recibos]\n";
+			for (int i = 0; i < recibos.size(); i++) {
+				Entrega e = recibos.get(i);
+				text += "- " + e.toString() + "\n";
+			}
+		}
+		return text.trim();
+	}
 
 	@Override
 	public String obtenerBalances() {
-		// TODO Auto-generated method stub
-		return null;
+		String text = "";
+		int total = 0;
+		for (Sucursal s : sucursales) {
+			int suma = 0;
+			ListaCircularDobleEnlace<Entrega> envios = s.getEnvios();
+			ListaCircularDobleEnlace<Entrega> recibos = s.getRecibos();
+			for (int i = 0; i < envios.size(); i++) {
+				Entrega e = envios.get(i);
+				suma += e.getValor();
+			}
+			for (int i = 0; i < recibos.size(); i++) {
+				Entrega e = recibos.get(i);
+				suma += e.getValor();
+			}
+			total += suma;
+			text += "- " + s.getCiudad() + ": $ " + suma + "\n";
+		}
+		text += "- Ganancias totales: $ " + total;
+		return text;
 	}
 
 	@Override
 	public String obtenerTxtClientes() {
-		// TODO Auto-generated method stub
-		return null;
+		String text = "";
+		for (Cliente c : clientes) {
+			String rut = c.getRut();
+			String nombre = c.getNombre();
+			String apellido = c.getApellido();
+			int saldo = c.getSaldo();
+			String ciudad = c.getCiudad();
+			text += rut + "," + nombre + "," + apellido + "," + saldo
+					+ "," + ciudad + "\n";
+		}
+		return text.trim();
 	}
 
 	@Override
 	public String obtenerTxtEntregas() {
-		// TODO Auto-generated method stub
-		return null;
+		String text = "";
+		for (int i = 0; i < entregas.size(); i++) {
+			Entrega e = entregas.get(i);
+			String codigo = e.getCodigo();
+			String rutRem = e.getRemitente().getRut();
+			String rutDest = e.getDestinatario().getRut();
+			int peso = e.getPeso();
+			String tipo;
+			if (e instanceof Documento) {
+				tipo = "D";
+				int grosor = ((Documento)e).getGrosor();
+				text += codigo + "," + tipo + "," + rutRem + "," + rutDest
+						+ "," + peso + "," + grosor + "\n";
+			}
+			else if (e instanceof Encomienda) {
+				tipo = "E";
+				int largo = ((Encomienda)e).getLargo();
+				int ancho = ((Encomienda)e).getAncho();
+				int prof = ((Encomienda)e).getProfundidad();
+				text += codigo + "," + tipo + "," + rutRem + "," + rutDest
+						+ "," + peso + "," + largo + "," + ancho + "," + prof + "\n";
+			}
+			else {
+				tipo = "V";
+				String material = ((Valija)e).getMaterial();
+				text += codigo + "," + tipo + "," + rutRem + "," + rutDest
+						+ "," + material + "," + peso + "\n"; 
+			}
+		}
+		return text.trim();
 	}
 
 }
